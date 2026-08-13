@@ -1,14 +1,15 @@
 {
   "name": "cradle-election",
   "version": "0.1.0",
-  "description": "The Cradle — an autonomous development director. Project memory competes in a recused evaluator tournament; the champion sets development direction and seeds every relaunch.",
+  "description": "The Cradle \u2014 an autonomous development director. Project memory competes in a recused evaluator tournament; the champion sets development direction and seeds every relaunch.",
   "type": "module",
   "scripts": {
     "dev": "tsx src/run.ts",
     "boot": "tsx src/boot-cli.ts",
     "state": "tsx src/state.ts",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "speak": "tsx src/speak.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.32.1",
