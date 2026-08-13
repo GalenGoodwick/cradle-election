@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx src/run.ts",
     "boot": "tsx src/boot-cli.ts",
+    "state": "tsx src/state.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit"
   },
