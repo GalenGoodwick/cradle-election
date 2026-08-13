@@ -6,10 +6,10 @@ import { InMemoryStore } from "./store.js";
 import { runTournament } from "./tournament.js";
 import { ingestRepo } from "./ingest.js";
 import { bordaPoints } from "./voting.js";
-import { SEED } from "./seed.js";
 
+// Pure dogfood: the repo's own body only — no cross-project seeds, no invented outcomes.
 const store = new InMemoryStore();
-await store.addMemories([...ingestRepo("."), ...SEED]);
+await store.addMemories(ingestRepo("."));
 const champion = await runTournament(store, { runId: `export-${Date.now()}` });
 const { candidates, cells } = store.dump();
 
