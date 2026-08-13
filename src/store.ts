@@ -81,7 +81,14 @@ export async function makeMongoStore(uri: string, dbName = "shell"): Promise<Sto
 
   return {
     async addMemories(mems) {
-      if (mems.length) await candidates.insertMany(mems as Memory[], { ordered: false }).catch(() => {});
+      // Upsert by id: re-running a tournament refreshes the pool, never duplicates it.
+      if (!mems.length) return;
+      await candidates.bulkWrite(
+        mems.map((m) => ({
+          updateOne: { filter: { id: m.id }, update: { $set: m }, upsert: true },
+        })),
+        { ordered: false },
+      );
     },
     async allAlive() {
       return candidates.find({ status: "alive" }).toArray();
