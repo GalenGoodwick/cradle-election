@@ -12,9 +12,13 @@ import { SEED } from "./seed.js";
 import { ingestRepo } from "./ingest.js";
 import type { Memory, Store } from "./types.js";
 
-/** Dogfood: memories = this repo's own code + our grounded development lessons. */
+/**
+ * Dogfood: memories = this repo's own body, nothing else. No cross-project seeds,
+ * no invented outcomes — grounding enters only when real development results are
+ * written back as outcome memories.
+ */
 function selfMemories(): Memory[] {
-  return [...ingestRepo("."), ...SEED];
+  return ingestRepo(".");
 }
 
 async function makeStore(): Promise<{ store: Store; label: string }> {
