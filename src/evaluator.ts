@@ -8,6 +8,7 @@
 
 import type { Ballot, Memory, Store } from "./types.js";
 import { outcomeWeight } from "./voting.js";
+import { agentBallot } from "./agent-evaluator.js";
 
 function overlap(a: string, b: string): number {
   const toks = (s: string) => new Set(s.toLowerCase().match(/[a-z0-9]+/g) ?? []);
@@ -108,7 +109,16 @@ function parseRanking(text: string, candidates: Memory[], lensId: string): Ballo
   }
 }
 
+/**
+ * Pick the evaluator backend:
+ *   CRADLE_EVALUATOR=agent  -> dynamic Claude Code agent swarm (uses your Max seat, no API key)
+ *   ANTHROPIC_API_KEY set   -> Anthropic SDK instance with the vector-search tool
+ *   otherwise               -> deterministic stub (outcome + lens overlap)
+ */
 export async function evaluate(lens: Memory, candidates: Memory[], store: Store): Promise<Ballot> {
+  const mode = process.env.CRADLE_EVALUATOR;
+  if (mode === "agent") return agentBallot(lens, candidates);
   const key = process.env.ANTHROPIC_API_KEY;
-  return key ? llmBallot(lens, candidates, store, key) : stubBallot(lens, candidates);
+  if (key) return llmBallot(lens, candidates, store, key);
+  return stubBallot(lens, candidates);
 }

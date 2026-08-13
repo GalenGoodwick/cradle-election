@@ -28,7 +28,12 @@ async function makeStore(): Promise<{ store: Store; label: string }> {
 async function main() {
   const { store, label } = await makeStore();
   const self = process.argv.includes("--self");
-  const evalMode = process.env.ANTHROPIC_API_KEY ? "LLM (recused, vector tool)" : "stub";
+  const evalMode =
+    process.env.CRADLE_EVALUATOR === "agent"
+      ? "agent swarm (headless Claude, no API key)"
+      : process.env.ANTHROPIC_API_KEY
+        ? "LLM (recused, vector tool)"
+        : "stub";
   const memories = self ? selfMemories() : SEED;
   console.log(
     `\nCradle election — store: ${label} · evaluators: ${evalMode}` +
