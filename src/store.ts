@@ -54,6 +54,15 @@ export class InMemoryStore implements Store {
   async currentChampion() {
     return this.champion;
   }
+
+  /** Flatten the run for persistence / charting (used by the Atlas exporter). */
+  dump() {
+    return {
+      candidates: [...this.mems.values()],
+      cells: this.cells,
+      champion: this.champion,
+    };
+  }
 }
 
 /**

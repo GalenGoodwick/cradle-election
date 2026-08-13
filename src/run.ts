@@ -9,7 +9,13 @@ import { InMemoryStore, makeMongoStore } from "./store.js";
 import { runTournament } from "./tournament.js";
 import { boot } from "./boot.js";
 import { SEED } from "./seed.js";
-import type { Store } from "./types.js";
+import { ingestRepo } from "./ingest.js";
+import type { Memory, Store } from "./types.js";
+
+/** Dogfood: memories = this repo's own code + our grounded development lessons. */
+function selfMemories(): Memory[] {
+  return [...ingestRepo("."), ...SEED];
+}
 
 async function makeStore(): Promise<{ store: Store; label: string }> {
   const uri = process.env.MONGODB_URI;
@@ -21,10 +27,16 @@ async function makeStore(): Promise<{ store: Store; label: string }> {
 
 async function main() {
   const { store, label } = await makeStore();
+  const self = process.argv.includes("--self");
   const evalMode = process.env.ANTHROPIC_API_KEY ? "LLM (recused, vector tool)" : "stub";
-  console.log(`\nCradle election — store: ${label} · evaluators: ${evalMode}\n`);
+  const memories = self ? selfMemories() : SEED;
+  console.log(
+    `\nCradle election — store: ${label} · evaluators: ${evalMode}` +
+      `${self ? " · DOGFOOD (ingesting this repo)" : ""}\n`,
+  );
+  console.log(`  ${memories.length} memories in the pool\n`);
 
-  await store.addMemories(SEED);
+  await store.addMemories(memories);
 
   const runId = `run-${Date.now()}`;
   const champion = await runTournament(store, {
