@@ -35,11 +35,23 @@ Atlas Data Explorer, db `shell`: click through `candidates` (13, `run:"pure-v1"`
 tiers). If Charts are built: show the recusal heatmap — "the blank diagonal is every
 evaluator refusing to vote for its own lens."
 
-## Shot 6 — no cold start (15s)
-Open the dashboard (or `boot.ts` output): the champion + priority spine + tier structure
-is the context a fresh instance wears. Close:
-> "The tournament's standing structure IS the context window. Storage that changes what
-> the system does next — not prompt-filling."
+## Shot 6 — the champion flips, live (20s) — THE MONEY MOVE
+```bash
+mv outcomes.json /tmp/o.json && npm run dev -- --self   # champion: run.ts (self-reference)
+mv /tmp/o.json outcomes.json  && npm run dev -- --self   # champion: the grounded outcome
+```
+> "Same code, same pool — the only difference is one memory of what actually happened.
+> Without it the brain elects its own entry point. With it, reality takes the crown.
+> Storage that changes what the system does next — live."
+Deterministic stub evaluators: this flip works every time.
+
+## Shot 7 — one line plugs the brain back in (15s)
+```bash
+claude --append-system-prompt "$(npm run -s boot)" -p "what should we build next, and why?"
+```
+A fresh Claude, zero context, answers with the elected direction and its reasons — because
+it booted *wearing* the election. Close:
+> "The tournament's standing structure IS the context window. No cold start."
 
 ## One-liner for the submission form
 The Cradle: an agent whose identity is the current winner of a never-ending election

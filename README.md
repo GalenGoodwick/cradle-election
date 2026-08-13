@@ -1,7 +1,8 @@
 # The Cradle — an autonomous development director
 
-> Identity isn't storage — it's the current winner of a never-ending election among experiences.
-> We built the election.
+> A persistent, reloadable project brain, where memories are both the candidates and the
+> lenses of self-evaluation, and the tournament's standing structure is the priority
+> architecture every relaunch trains on.
 
 An LLM agent starts every session from nothing. The Cradle is a persistent process a fresh
 instance *wears*: the project's own memory — its code, its lessons, its outcomes — competes in a
