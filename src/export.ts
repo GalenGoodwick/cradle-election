@@ -7,9 +7,15 @@ import { runTournament } from "./tournament.js";
 import { ingestRepo } from "./ingest.js";
 import { bordaPoints } from "./voting.js";
 
-// Pure dogfood: the repo's own body only — no cross-project seeds, no invented outcomes.
+import { readFileSync } from "node:fs";
+
+// Dogfood pool: the repo's own body + its real development outcomes (the flywheel write-back).
 const store = new InMemoryStore();
-await store.addMemories(ingestRepo("."));
+let outcomes = [];
+try {
+  outcomes = JSON.parse(readFileSync("outcomes.json", "utf8"));
+} catch {}
+await store.addMemories([...ingestRepo("."), ...outcomes]);
 const champion = await runTournament(store, { runId: `export-${Date.now()}` });
 const { candidates, cells } = store.dump();
 

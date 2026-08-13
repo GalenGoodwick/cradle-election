@@ -1,0 +1,14 @@
+[
+  {
+    "id": "outcome-protect-demo-2026-08-13",
+    "kind": "outcome",
+    "text": "Pursued the elected directive (protect the demo): added end-to-end tests for tournament, checkpoint resume, and boot. The tests immediately caught a real bug - the outcome weight had zero grip on zero-Borda candidates in small cells - fixed with +1 smoothing. 13/13 green.",
+    "tier": 0,
+    "status": "alive",
+    "outcome": {
+      "pursued": "champion directive pure-v1: run.ts - the demo IS the product, protect it first",
+      "result": "e2e tests added; real defect found and fixed (grounding lever dead at zero Borda); suite 9 -> 13 tests, all green",
+      "score": 0.9
+    }
+  }
+]

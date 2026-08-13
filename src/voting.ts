@@ -54,7 +54,9 @@ export function tallyCell(candidates: Memory[], ballots: Ballot[]): CellResult {
   const standings: Standing[] = candidates.map((m) => {
     const bordaPts = raw.get(m.id) ?? 0;
     const w = outcomeWeight(m);
-    return { memoryId: m.id, bordaPoints: bordaPts, outcomeWeight: w, score: bordaPts * w };
+    // +1 smoothing: at zero Borda, `0 * w` would erase the outcome signal entirely —
+    // reality must keep grip on every candidate, including last place in a small cell.
+    return { memoryId: m.id, bordaPoints: bordaPts, outcomeWeight: w, score: (bordaPts + 1) * w };
   });
 
   // Best first. Tie-break by raw Borda, then by id for full determinism.

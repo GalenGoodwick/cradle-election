@@ -5,6 +5,7 @@
 //   ANTHROPIC_API_KEY=... npm run dev -> real recused LLM evaluators with the vector tool
 
 import "dotenv/config";
+import { readFileSync } from "node:fs";
 import { InMemoryStore, makeMongoStore } from "./store.js";
 import { runTournament } from "./tournament.js";
 import { boot } from "./boot.js";
@@ -13,12 +14,18 @@ import { ingestRepo } from "./ingest.js";
 import type { Memory, Store } from "./types.js";
 
 /**
- * Dogfood: memories = this repo's own body, nothing else. No cross-project seeds,
- * no invented outcomes — grounding enters only when real development results are
- * written back as outcome memories.
+ * Dogfood: memories = this repo's own body + its real development outcomes
+ * (outcomes.json — the flywheel write-back). No cross-project seeds, no invented
+ * scores: every outcome in that file records something that actually happened.
  */
 function selfMemories(): Memory[] {
-  return ingestRepo(".");
+  let outcomes: Memory[] = [];
+  try {
+    outcomes = JSON.parse(readFileSync("outcomes.json", "utf8"));
+  } catch {
+    // no outcomes yet — first revolution of the flywheel hasn't happened
+  }
+  return [...ingestRepo("."), ...outcomes];
 }
 
 async function makeStore(): Promise<{ store: Store; label: string }> {
