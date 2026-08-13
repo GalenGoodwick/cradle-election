@@ -6,7 +6,6 @@
 // agents in parallel (see tournament.runCell), so a swarm lands per cell.
 
 import { execFile } from "node:child_process";
-import { tmpdir } from "node:os";
 import { promisify } from "node:util";
 import type { Ballot, Memory } from "./types.js";
 
@@ -22,7 +21,9 @@ function prompt(lens: Memory, candidates: Memory[]): string {
     `Wear this memory as your lens and judge everything THROUGH it — it is your relativity:\n\n` +
     `LENS (${lens.id} [${lens.kind}]): ${lens.text}\n\n` +
     `Rank these OTHER candidate memories, most to least deserving to shape the next direction.\n` +
-    `Weigh evidence of what actually worked in action over what merely sounds good.\n\n` +
+    `Weigh evidence of what actually worked in action over what merely sounds good.\n` +
+    `You may research first: run \`npx tsx src/search-cli.ts "<query>"\` (vector search over the\n` +
+    `project's full memory pool) to pull related context before you rank.\n\n` +
     `CANDIDATES:\n${list}\n\n` +
     `Reply with ONLY this JSON, nothing else: {"ranking": ["<id>", ...], "note": "<one sentence why>"}`
   );
@@ -44,11 +45,17 @@ function parse(text: string, candidates: Memory[], lensId: string): Ballot | nul
 
 /** Spawn one headless Claude agent to produce this evaluator's recused ballot. */
 export async function agentBallot(lens: Memory, candidates: Memory[]): Promise<Ballot> {
-  const args = ["-p", prompt(lens, candidates), "--output-format", "text", "--model", MODEL];
+  const args = [
+    "-p", prompt(lens, candidates),
+    "--output-format", "text",
+    "--model", MODEL,
+    // Exactly one tool: the vector-search CLI over the memory pool. Nothing else.
+    "--allowedTools", "Bash(npx tsx src/search-cli.ts*)",
+  ];
   try {
-    // Run from a neutral cwd so the child doesn't load this project's MCP/plugins.
+    // Run from the repo so search-cli + .env resolve; allowedTools keeps the agent scoped.
     const { stdout } = await run(CLAUDE_BIN, args, {
-      cwd: tmpdir(),
+      cwd: process.cwd(),
       maxBuffer: 1 << 20,
       timeout: 120_000,
     });
